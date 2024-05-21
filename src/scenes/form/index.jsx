@@ -1,24 +1,44 @@
-import { Box, Button, TextField } from "@mui/material";
-import { Formik } from "formik";
+import { Box, Button } from "@mui/material";
+import { FieldArray, Formik } from "formik";
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
+import TextField from "../../components/formsUI/textField";
+import Select from "../../components/formsUI/select";
+import RadioBtn from "../../components/formsUI/radioBtn";
+// import TimePicker from "../../components/formsUI/timePicker";
+import {
+  executeOptions,
+  expiryOptions,
+  optionOptions,
+  tradeRange,
+} from "../../data/mockData";
+import { useEffect, useState } from "react";
 
 const Form = () => {
+  const [quantityByLotSize, setQuantityByLotSize] = useState({});
   const isNonMobile = useMediaQuery("(min-width:600px)");
 
+  useEffect(() => {
+    getOptionsByLotSize(50);
+  }, []);
   const handleFormSubmit = (values) => {
     console.log(values);
   };
-
+  function getOptionsByLotSize(lotSize) {
+    const options = {};
+    for (let i = 1; i < 11; i++) {
+      options[i * lotSize] = i * lotSize;
+    }
+    setQuantityByLotSize(options);
+  }
   return (
     <Box m="20px">
       <Header title="CREATE USER" subtitle="Create a New User Profile" />
-
       <Formik
         onSubmit={handleFormSubmit}
         initialValues={initialValues}
-        validationSchema={checkoutSchema}
+        validationSchema={FORM_VALIDATION}
       >
         {({
           values,
@@ -29,97 +49,91 @@ const Form = () => {
           handleSubmit,
         }) => (
           <form onSubmit={handleSubmit}>
-            <Box
-              display="grid"
-              gap="30px"
-              gridTemplateColumns="repeat(4, minmax(0, 1fr))"
-              sx={{
-                "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
-              }}
-            >
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="First Name"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.firstName}
-                name="firstName"
-                error={!!touched.firstName && !!errors.firstName}
-                helperText={touched.firstName && errors.firstName}
-                sx={{ gridColumn: "span 2" }}
+            <Box>
+              <RadioBtn
+                controlName="tradeRange"
+                label="Order Type"
+                options={tradeRange}
               />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Last Name"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.lastName}
-                name="lastName"
-                error={!!touched.lastName && !!errors.lastName}
-                helperText={touched.lastName && errors.lastName}
-                sx={{ gridColumn: "span 2" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Email"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.email}
-                name="email"
-                error={!!touched.email && !!errors.email}
-                helperText={touched.email && errors.email}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Contact Number"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.contact}
-                name="contact"
-                error={!!touched.contact && !!errors.contact}
-                helperText={touched.contact && errors.contact}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Address 1"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.address1}
-                name="address1"
-                error={!!touched.address1 && !!errors.address1}
-                helperText={touched.address1 && errors.address1}
-                sx={{ gridColumn: "span 4" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="Address 2"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.address2}
-                name="address2"
-                error={!!touched.address2 && !!errors.address2}
-                helperText={touched.address2 && errors.address2}
-                sx={{ gridColumn: "span 4" }}
-              />
-            </Box>
-            <Box display="flex" justifyContent="end" mt="20px">
-              <Button type="submit" color="secondary" variant="contained">
-                Create New User
-              </Button>
+              {/* <TimePicker /> */}
+
+              <FieldArray name="legs">
+                {(fieldArraProps) => {
+                  const { push, remove, form } = fieldArraProps;
+                  const { legs } = form.values;
+                  return (
+                    <Box mt="30px">
+                      {legs.map((leg, i) => {
+                        return (
+                          <div key={i}>
+                            <Box
+                              display="grid"
+                              gap="8px"
+                              mb="12px"
+                              gridTemplateColumns="repeat(8, minmax(0, 1fr))"
+                              sx={{
+                                "& > div": {
+                                  gridColumn: isNonMobile
+                                    ? undefined
+                                    : "span 4",
+                                },
+                              }}
+                            >
+                              <Select
+                                controlName={`legs[${i}]['execute']`}
+                                label="Execute"
+                                options={executeOptions}
+                              />
+                              <Select
+                                controlName={`legs[${i}]['quantity']`}
+                                label="Quantity"
+                                options={quantityByLotSize}
+                              />
+                              <Select
+                                controlName="option"
+                                label="Option"
+                                options={optionOptions}
+                              />
+                              <Select
+                                controlName={`legs[${i}]['expiryTerm']`}
+                                label="Expiry"
+                                options={expiryOptions}
+                              />
+                              <Select
+                                controlName={`legs[${i}]['atmPt']`}
+                                label="ATM PT"
+                                options={quantityByLotSize}
+                              />
+                              <TextField
+                                controlName={`legs[${i}]['stopLoss']`}
+                                label="SL %"
+                              />
+                              <TextField
+                                controlName={`legs[${i}]['targetPoint']`}
+                                label="TP %"
+                              />
+                              {i > 0 && (
+                                <Button
+                                  variant="text"
+                                  onClick={() => remove(i)}
+                                >
+                                  X
+                                </Button>
+                              )}
+                            </Box>
+                          </div>
+                        );
+                      })}
+                      <Button
+                        variant="outlined"
+                        onClick={() => push(initialValues.legs[0])}
+                      >
+                        Add Leg
+                      </Button>
+                    </Box>
+                  );
+                }}
+              </FieldArray>
             </Box>
           </form>
         )}
@@ -128,27 +142,34 @@ const Form = () => {
   );
 };
 
-const phoneRegExp =
-  /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
-
-const checkoutSchema = yup.object().shape({
-  firstName: yup.string().required("required"),
-  lastName: yup.string().required("required"),
-  email: yup.string().email("invalid email").required("required"),
-  contact: yup
-    .string()
-    .matches(phoneRegExp, "Phone number is not valid")
-    .required("required"),
-  address1: yup.string().required("required"),
-  address2: yup.string().required("required"),
+const FORM_VALIDATION = yup.object().shape({
+  tradeRange: yup.string().required("Required"),
+  legs: yup
+    .array()
+    .ensure()
+    .of(
+      yup.object().shape({
+        execute: yup.string().required("Required"),
+        quantity: yup.string().required("Required"),
+        option: yup.string().required("Required"),
+        expiryTerm: yup.string().required("Required"),
+        atmPt: yup.string().required("Required"),
+      }),
+    ),
 });
 const initialValues = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  contact: "",
-  address1: "",
-  address2: "",
+  tradeRange: "",
+  legs: [
+    {
+      execute: "",
+      quantity: "",
+      option: "",
+      expiryTerm: "",
+      atmPt: "",
+      stopLoss: "",
+      targetPoint: "",
+    },
+  ],
 };
 
 export default Form;

@@ -1,5 +1,25 @@
 import { tokens } from "../theme";
 
+export const executeOptions = {
+  BUY: "Buy",
+  SELL: "Sell",
+};
+export const optionOptions = {
+  PE: "Put",
+  CE: "Call",
+};
+export const expiryOptions = {
+  WEEKLY: "Weekly",
+  MONTHLY: "Monthly",
+  DAY: "Today",
+};
+
+export const tradeRange = {
+  MIS: "MIS",
+  CNC: "CNC",
+  BTST: "BTST",
+};
+
 export const mockDataTeam = [
   {
     id: 1,
