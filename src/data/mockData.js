@@ -14,7 +14,7 @@ export const expiryOptions = {
   DAY: "Today",
 };
 
-export const tradeRange = {
+export const orderType = {
   MIS: "MIS",
   CNC: "CNC",
   BTST: "BTST",
