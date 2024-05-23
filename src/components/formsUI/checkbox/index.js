@@ -1,23 +1,23 @@
-import { FormControl, TextField } from "@mui/material";
+import { Checkbox, FormControl } from "@mui/material";
 import { useField } from "formik";
 
-export default function TextFieldWrapper({ controlName, ...otherProps }) {
+export default function CheckboxWrapper({ controlName, ...otherProps }) {
   const [field, mata] = useField(controlName);
-  const configTextField = {
+  const configCheckbox = {
     ...field,
     ...otherProps,
     fullWidth: true,
     variant: "outlined",
   };
   if (mata && mata.touched && mata.error) {
-    configTextField.error = true;
-    configTextField.helperText = mata.error;
+    configCheckbox.error = true;
+    configCheckbox.helperText = mata.error;
   }
 
   return (
     <>
       <FormControl sx={{ m: 1 }}>
-        <TextField {...configTextField} />
+        <Checkbox {...configCheckbox} />
       </FormControl>
     </>
   );

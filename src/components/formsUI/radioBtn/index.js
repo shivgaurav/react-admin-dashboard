@@ -36,7 +36,7 @@ export default function RadioBtnWrapper({
           display="grid"
           gap="8px"
           mb="12px"
-          gridTemplateColumns="repeat(16, minmax(0, 1fr))"
+          gridTemplateColumns="repeat(3, minmax(0, 1fr))"
         >
           {Object.keys(options).map((option, i) => {
             return (
